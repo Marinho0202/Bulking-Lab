@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,12 +10,25 @@ class AuthService extends ChangeNotifier {
 
   UserModel? _currentUser;
   bool _initialized = false;
+=======
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
+import '../models/user_model.dart';
+
+class AuthService extends ChangeNotifier {
+  UserModel? _currentUser;
+  bool _initialized = false;
+  final _uuid = const Uuid();
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
 
   UserModel? get currentUser => _currentUser;
   bool get isLoggedIn => _currentUser != null;
   bool get initialized => _initialized;
 
   AuthService() {
+<<<<<<< HEAD
     _listenToAuthChanges();
   }
 
@@ -40,6 +54,21 @@ class AuthService extends ChangeNotifier {
     } catch (e) {
       debugPrint("Erro ao buscar dados: $e");
     }
+=======
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userData = prefs.getString('current_user');
+    if (userData != null) {
+      try {
+        _currentUser = UserModel.fromJson(json.decode(userData));
+      } catch (_) {}
+    }
+    _initialized = true;
+    notifyListeners();
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
   }
 
   Future<bool> register({
@@ -55,6 +84,7 @@ class AuthService extends ChangeNotifier {
     required int mealsPerDay,
   }) async {
     try {
+<<<<<<< HEAD
       // 1. Cria no Auth
       UserCredential credential = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -96,11 +126,44 @@ class AuthService extends ChangeNotifier {
     } catch (e) {
       debugPrint("ERRO DESCONHECIDO: $e");
       rethrow;
+=======
+      final prefs = await SharedPreferences.getInstance();
+      final usersRaw = prefs.getString('all_users') ?? '{}';
+      final Map<String, dynamic> users = json.decode(usersRaw);
+
+      if (users.containsKey(email)) return false;
+
+      final user = UserModel(
+        id: _uuid.v4(),
+        name: name,
+        email: email,
+        weight: weight,
+        height: height,
+        age: age,
+        gender: gender,
+        activityLevel: activityLevel,
+        goal: goal,
+        mealsPerDay: mealsPerDay,
+      );
+
+      final userJson = user.toJson();
+      userJson['password'] = password;
+      users[email] = userJson;
+
+      await prefs.setString('all_users', json.encode(users));
+      await _saveCurrentUser(user);
+      _currentUser = user;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      return false;
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
     }
   }
 
   Future<bool> login(String email, String password) async {
     try {
+<<<<<<< HEAD
       UserCredential credential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
@@ -112,15 +175,38 @@ class AuthService extends ChangeNotifier {
       return false;
     } catch (e) {
       rethrow;
+=======
+      final prefs = await SharedPreferences.getInstance();
+      final usersRaw = prefs.getString('all_users') ?? '{}';
+      final Map<String, dynamic> users = json.decode(usersRaw);
+
+      if (!users.containsKey(email)) return false;
+      final userData = users[email] as Map<String, dynamic>;
+      if (userData['password'] != password) return false;
+
+      final user = UserModel.fromJson(userData);
+      await _saveCurrentUser(user);
+      _currentUser = user;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      return false;
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
     }
   }
 
   Future<void> logout() async {
+<<<<<<< HEAD
     await _auth.signOut();
+=======
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('current_user');
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
     _currentUser = null;
     notifyListeners();
   }
 
+<<<<<<< HEAD
   Future<void> updateWeight(double newWeight) async {
     if (_currentUser == null) return;
     try {
@@ -134,3 +220,17 @@ class AuthService extends ChangeNotifier {
     }
   }
 }
+=======
+  Future<void> _saveCurrentUser(UserModel user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('current_user', json.encode(user.toJson()));
+  }
+
+  Future<void> updateWeight(double newWeight) async {
+    if (_currentUser == null) return;
+    _currentUser!.currentWeight = newWeight;
+    await _saveCurrentUser(_currentUser!);
+    notifyListeners();
+  }
+}
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae

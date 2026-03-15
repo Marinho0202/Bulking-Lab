@@ -22,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _showPass = false;
 
   Future<void> _login() async {
+<<<<<<< HEAD
   setState(() {
     _loading = true;
     _error = null;
@@ -53,6 +54,22 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 }
+=======
+    if (_email.text.isEmpty || _password.text.isEmpty) {
+      setState(() => _error = 'Preencha todos os campos.');
+      return;
+    }
+    setState(() { _loading = true; _error = null; });
+    final ok = await context.read<AuthService>().login(_email.text.trim(), _password.text);
+    if (!mounted) return;
+    setState(() => _loading = false);
+    if (ok) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+    } else {
+      setState(() => _error = 'E-mail ou senha incorretos.');
+    }
+  }
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
 
   @override
   Widget build(BuildContext context) {

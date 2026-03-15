@@ -28,6 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _error;
   int _step = 0;
 
+<<<<<<< HEAD
   @override
   void initState() {
     super.initState();
@@ -56,18 +57,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
       double p = double.parse(_weight.text.replaceAll(',', '.'));
       double a = double.parse(_height.text.replaceAll(',', '.'));
 
+=======
+  Future<void> _register() async {
+    setState(() { _loading = true; _error = null; });
+    try {
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
       final ok = await context.read<AuthService>().register(
         name: _name.text.trim(),
         email: _email.text.trim(),
         password: _password.text,
+<<<<<<< HEAD
         weight: p,
         height: a,
+=======
+        weight: double.parse(_weight.text),
+        height: double.parse(_height.text),
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
         age: int.parse(_age.text),
         gender: _gender,
         activityLevel: _activity,
         goal: _goal,
         mealsPerDay: _meals,
       );
+<<<<<<< HEAD
 
       if (!mounted) return;
 
@@ -87,13 +99,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
       
       setState(() => _error = e.toString().replaceAll('Exception: ', ''));
       rethrow;
+=======
+      if (!mounted) return;
+      if (ok) {
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const HomeScreen()), (_) => false);
+      } else {
+        setState(() => _error = 'E-mail já cadastrado.');
+      }
+    } catch (e) {
+      setState(() => _error = 'Verifique os dados e tente novamente.');
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
     }
     setState(() => _loading = false);
   }
 
+<<<<<<< HEAD
   // ... (Seus métodos _buildStep0, _buildStep1, _buildStep2, _stepTitle, _label, _selectBtn e _radioTile continuam iguais)
   // Vou omitir aqui para focar no que mudou, mas você deve mantê-los no arquivo.
 
+=======
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
   Widget _buildStep0() => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -239,16 +264,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (_step == 2) _buildStep2(),
               if (_error != null) ...[
                 const SizedBox(height: 12),
+<<<<<<< HEAD
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(color: AppColors.error.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
                   child: Text(_error!, style: const TextStyle(color: AppColors.error, fontSize: 13)),
                 ),
+=======
+                Text(_error!, style: const TextStyle(color: AppColors.error, fontSize: 13)),
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
               ],
               const SizedBox(height: 32),
               if (_loading)
                 const Center(child: CircularProgressIndicator(color: AppColors.primary))
               else if (_step < 2)
+<<<<<<< HEAD
                 BLButton(
                   label: 'Continuar', 
                   onTap: _canAdvance() ? () => setState(() => _step++) : null
@@ -258,10 +288,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   label: 'Criar conta', 
                   onTap: _canAdvance() ? _register : null
                 ),
+=======
+                BLButton(label: 'Continuar', onTap: _canAdvance() ? () => setState(() => _step++) : null)
+              else
+                BLButton(label: 'Criar conta', onTap: _register),
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
             ],
           ),
         ),
       ),
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae

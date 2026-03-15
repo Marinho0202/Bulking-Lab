@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // IMPORTANTE
 import '../models/meal_model.dart';
@@ -7,6 +8,17 @@ import 'package:uuid/uuid.dart';
 
 class MealService extends ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance; // CONEXÃO FIRESTORE
+=======
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
+import '../models/meal_model.dart';
+import '../models/user_model.dart';
+import 'scoring_service.dart';
+
+class MealService extends ChangeNotifier {
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
   final _uuid = const Uuid();
   List<MealEntry> _meals = [];
   bool _loaded = false;
@@ -14,6 +26,7 @@ class MealService extends ChangeNotifier {
 
   List<MealEntry> get meals => _meals;
 
+<<<<<<< HEAD
   // BUSCA DO FIREBASE
   Future<void> loadForUser(String userId) async {
     if (_loadedUserId == userId && _loaded) return;
@@ -122,6 +135,28 @@ class MealService extends ChangeNotifier {
   }
 
   // Mantive as funções de lógica de cálculo iguais
+=======
+  Future<void> loadForUser(String userId) async {
+    if (_loadedUserId == userId && _loaded) return;
+    _loadedUserId = userId;
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('meals_$userId');
+    if (raw != null) {
+      final list = json.decode(raw) as List;
+      _meals = list.map((e) => MealEntry.fromJson(e)).toList();
+    } else {
+      _meals = [];
+    }
+    _loaded = true;
+    notifyListeners();
+  }
+
+  Future<void> _save(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('meals_$userId', json.encode(_meals.map((m) => m.toJson()).toList()));
+  }
+
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
   DailyLog getDailyLog(String userId, DateTime date) {
     final dayMeals = _meals.where((m) {
       return m.userId == userId &&
@@ -157,4 +192,49 @@ class MealService extends ChangeNotifier {
     }
     return count;
   }
+<<<<<<< HEAD
 }
+=======
+
+  Future<void> addMeal({
+    required String userId,
+    required FoodItem food,
+    required double portions,
+    required String mealType,
+  }) async {
+    final entry = MealEntry(
+      id: _uuid.v4(),
+      userId: userId,
+      food: food,
+      portions: portions,
+      mealType: mealType,
+      registeredAt: DateTime.now(),
+    );
+    _meals.add(entry);
+    await _save(userId);
+    notifyListeners();
+  }
+
+  Future<void> deleteMeal(String mealId, String userId) async {
+    _meals.removeWhere((m) => m.id == mealId);
+    await _save(userId);
+    notifyListeners();
+  }
+
+  Future<void> updateMeal(String mealId, String userId, double newPortions) async {
+    final idx = _meals.indexWhere((m) => m.id == mealId);
+    if (idx == -1) return;
+    final old = _meals[idx];
+    _meals[idx] = MealEntry(
+      id: old.id,
+      userId: old.userId,
+      food: old.food,
+      portions: newPortions,
+      mealType: old.mealType,
+      registeredAt: old.registeredAt,
+    );
+    await _save(userId);
+    notifyListeners();
+  }
+}
+>>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
