@@ -1,0 +1,283 @@
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+Installing build/app/outputs/flutter-apk/app-debug.apk...           6.4s
+D/FlutterJNI( 7060): Beginning load of flutter...
+D/FlutterJNI( 7060): flutter (null) was loaded normally!
+I/flutter ( 7060): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+D/FlutterRenderer( 7060): Width is zero. 0,0
+I/flutter ( 7060): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+D/FlutterRenderer( 7060): Width is zero. 0,0
+D/FlutterRenderer( 7060): Width is zero. 0,0
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+W/FlutterJNI( 7060): Tried to send a platform message response, but FlutterJNI was detached from native C++. Could not send. Response ID: 1
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+W/FlutterJNI( 7060): Tried to send a platform message response, but FlutterJNI was detached from native C++. Could not send. Response ID: 3
+Flutter run key commands.
+d Detach (terminate "flutter run" but leave application running).
+The Flutter DevTools debugger and profiler on M2103K19G is available at: http://127.0.0.1:45631/6gpZHr9VSNg=/devtools/?uri=ws://127.0.0.1:45631/6gpZHr9VSNg=/ws
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/InputMethodManager( 7060): showSoftInput() view=io.flutter.embedding.android.FlutterView{f7fae37 VFE...... .F....ID 0,0-1080,2298 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/InputMethodManager( 7060): showSoftInput() view=io.flutter.embedding.android.FlutterView{f7fae37 VFE...... .F...... 0,0-1080,2298 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+E/GoogleApiManager( 7060): java.lang.SecurityException: Unknown calling package name 'com.google.android.gms'.
+E/GoogleApiManager( 7060): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3011)
+E/GoogleApiManager( 7060): 	at android.os.Parcel.createException(Parcel.java:2995)
+E/GoogleApiManager( 7060): 	at android.os.Parcel.readException(Parcel.java:2978)
+E/GoogleApiManager( 7060): 	at android.os.Parcel.readException(Parcel.java:2920)
+W/GoogleApiManager( 7060): Not showing notification since connectionResult is not user-facing: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+W/FlagRegistrar( 7060): gcsk: 17: 17: API: Phenotype.API is not available on this device. Connection failed with: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+W/FlagRegistrar( 7060): Caused by: bfos: 17: API: Phenotype.API is not available on this device. Connection failed with: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+I/flutter ( 7060): Refeições carregadas do Firebase: 0
+I/flutter ( 7060): Refeição salva com sucesso no Firestore!
+I/flutter ( 7060): Refeição salva com sucesso no Firestore!
+E/GoogleApiManager( 7060): java.lang.SecurityException: Unknown calling package name 'com.google.android.gms'.
+E/GoogleApiManager( 7060): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3011)
+E/GoogleApiManager( 7060): 	at android.os.Parcel.createException(Parcel.java:2995)
+E/GoogleApiManager( 7060): 	at android.os.Parcel.readException(Parcel.java:2978)
+E/GoogleApiManager( 7060): 	at android.os.Parcel.readException(Parcel.java:2920)
+W/GoogleApiManager( 7060): Not showing notification since connectionResult is not user-facing: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+I/flutter ( 7060): Refeição salva com sucesso no Firestore!
+I/flutter ( 7060): Refeição salva com sucesso no Firestore!
+I/flutter ( 7060): Refeição salva com sucesso no Firestore!
+══╡ EXCEPTION CAUGHT BY WIDGETS LIBRARY ╞═══════════════════════════════════════════════════════════
+When the exception was thrown, this was the stack:
+#0      Element._debugCheckStateIsActiveForAncestorLookup.<anonymous closure> (package:flutter/src/widgets/framework.dart:5049:9)
+#1      Element._debugCheckStateIsActiveForAncestorLookup (package:flutter/src/widgets/framework.dart:5063:6)
+#2      Element.getElementForInheritedWidgetOfExactType (package:flutter/src/widgets/framework.dart:5098:12)
+#7      StatefulElement.unmount (package:flutter/src/widgets/framework.dart:6030:11)
+#8      _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2117:13)
+#9      _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#10     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#11     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#12     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#13     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#14     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#15     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#16     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#17     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#18     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#19     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#20     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#21     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#22     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#23     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#24     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#25     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#26     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#27     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#28     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#29     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#30     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#31     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#32     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#33     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#34     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#35     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#36     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#37     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#38     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#39     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#40     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#41     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#42     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#43     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#44     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#45     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#46     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#47     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#48     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#49     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#50     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#51     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#52     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#53     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#54     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#55     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#56     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#57     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#58     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#59     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#60     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#61     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#62     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#63     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#64     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#65     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#66     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#67     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#68     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#69     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#70     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#71     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#72     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#73     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#74     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#75     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#76     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#77     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#78     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#79     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#80     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#81     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#82     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#83     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#84     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#85     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#86     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#87     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#88     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#89     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#90     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#91     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#92     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#93     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#94     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#95     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#96     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#97     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#98     _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#99     _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#100    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#101    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#102    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#103    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#104    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#105    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#106    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#107    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#108    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#109    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#110    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#111    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#112    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#113    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#114    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#115    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#116    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#117    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#118    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#119    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#120    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#121    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#122    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#123    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#124    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#125    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#126    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#127    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#128    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#129    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#130    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7101:14)
+#131    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#132    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#133    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#134    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#135    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#136    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#137    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#138    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#139    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#140    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#141    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#142    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#143    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#144    _InactiveElements._unmount.<anonymous closure> (package:flutter/src/widgets/framework.dart:2115:7)
+#145    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5871:14)
+#146    _InactiveElements._unmount (package:flutter/src/widgets/framework.dart:2113:13)
+#148    _InactiveElements._unmountAll (package:flutter/src/widgets/framework.dart:2126:25)
+#149    BuildOwner.lockState (package:flutter/src/widgets/framework.dart:3020:15)
+#150    BuildOwner.finalizeTree (package:flutter/src/widgets/framework.dart:3344:7)
+#151    WidgetsBinding.drawFrame (package:flutter/src/widgets/binding.dart:1309:19)
+#152    RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:495:5)
+#153    SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1430:15)
+#154    SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1345:9)
+#155    SchedulerBinding._handleDrawFrame (package:flutter/src/scheduler/binding.dart:1198:5)
+D/InputMethodManager( 7060): showSoftInput() view=io.flutter.embedding.android.FlutterView{f7fae37 VFE...... .F...... 0,0-1080,2298 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/InputMethodManager( 7060): showSoftInput() view=io.flutter.embedding.android.FlutterView{f7fae37 VFE...... .F...... 0,0-1080,2298 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/InputMethodManager( 7060): showSoftInput() view=io.flutter.embedding.android.FlutterView{f7fae37 VFE...... .F...... 0,0-1080,2298 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+Another exception was thrown: Looking up a deactivated widget's ancestor is unsafe.
+D/InputMethodManager( 7060): showSoftInput() view=io.flutter.embedding.android.FlutterView{f7fae37 VFE...... .F...... 0,0-1080,2298 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/InputMethodManager( 7060): showSoftInput() view=io.flutter.embedding.android.FlutterView{f7fae37 VFE...... .F...... 0,0-1080,2298 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
+D/FlutterJNI( 7060): Sending viewport metrics to the engine.
