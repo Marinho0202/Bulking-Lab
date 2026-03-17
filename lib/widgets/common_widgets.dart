@@ -151,9 +151,33 @@ class ScoreBadge extends StatelessWidget {
       child: Center(
         child: Text(
           '$score',
-          style: GoogleFonts.syne(color: _color, fontWeight: FontWeight.w800, fontSize: size * 0.32),
+          style: GoogleFonts.inter(color: _color, fontWeight: FontWeight.w800, fontSize: size * 0.32),
         ),
       ),
+    );
+  }
+}
+
+// Widget de pull-to-refresh global. Envolve qualquer tela com o gesto de arrastar
+// para baixo e executa o callback onRefresh fornecido.
+class BLRefreshWrapper extends StatelessWidget {
+  final Widget child;
+  final Future<void> Function() onRefresh;
+
+  const BLRefreshWrapper({
+    super.key,
+    required this.child,
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      color: AppColors.primary,
+      backgroundColor: AppColors.surface,
+      displacement: 60,
+      child: child,
     );
   }
 }

@@ -63,11 +63,27 @@ class GroupModel {
     'members': members.map((m) => m.toJson()).toList(),
   };
 
-  factory GroupModel.fromJson(Map<String, dynamic> json) => GroupModel(
-    id: json['id'], name: json['name'], objective: json['objective'],
-    duration: json['duration'], creatorId: json['creatorId'],
-    inviteCode: json['inviteCode'],
-    createdAt: DateTime.parse(json['createdAt']),
-    members: (json['members'] as List).map((m) => GroupMember.fromJson(m)).toList(),
-  );
+  factory GroupModel.fromJson(Map<String, dynamic> json) {
+    final rawMembers = (json['members'] as List? ?? []);
+    final members = <GroupMember>[];
+    for (final m in rawMembers) {
+      try {
+        members.add(GroupMember.fromJson(m as Map<String, dynamic>));
+      } catch (e) {
+        // Ignora membros com dados corrompidos em vez de quebrar o grupo inteiro
+      }
+    }
+    return GroupModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? 'Grupo',
+      objective: json['objective'] ?? 'mixed',
+      duration: json['duration'] ?? 'weekly',
+      creatorId: json['creatorId'] ?? '',
+      inviteCode: json['inviteCode'] ?? '',
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : DateTime.now(),
+      members: members,
+    );
+  }
 }

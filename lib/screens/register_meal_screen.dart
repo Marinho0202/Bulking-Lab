@@ -16,8 +16,11 @@ class RegisterMealScreen extends StatefulWidget {
 }
 
 class _RegisterMealScreenState extends State<RegisterMealScreen> {
-  FoodItem? _selected;
-  double _portions = 1;
+  // food.id → FoodItem
+  final Map<String, FoodItem> _selectedFoods = {};
+  // food.id → porções
+  final Map<String, double> _selectedPortions = {};
+
   String _mealType = 'lunch';
   String _search = '';
   String _category = 'Todos';
@@ -29,34 +32,84 @@ class _RegisterMealScreenState extends State<RegisterMealScreen> {
     return list;
   }
 
+  bool _isSelected(FoodItem food) => _selectedFoods.containsKey(food.id);
+  double _getPortions(FoodItem food) => _selectedPortions[food.id] ?? 1.0;
+
+  void _toggleFood(FoodItem food) {
+    setState(() {
+      if (_isSelected(food)) {
+        _selectedFoods.remove(food.id);
+        _selectedPortions.remove(food.id);
+      } else {
+        _selectedFoods[food.id] = food;
+        _selectedPortions[food.id] = 1.0;
+      }
+    });
+  }
+
+  void _changePortions(FoodItem food, double delta) {
+    final next = _getPortions(food) + delta;
+    if (next < 0.5) return;
+    setState(() => _selectedPortions[food.id] = next);
+  }
+
+  double get _totalCalories => _selectedFoods.entries.fold(0.0, (sum, e) {
+    final portions = _selectedPortions[e.key] ?? 1.0;
+    return sum + e.value.calories(portions);
+  });
+
   Future<void> _save() async {
-    if (_selected == null) return;
+    if (_selectedFoods.isEmpty) return;
     setState(() => _loading = true);
     final user = context.read<AuthService>().currentUser!;
-    await context.read<MealService>().addMeal(
-      userId: user.id,
-      food: _selected!,
-      portions: _portions,
-      mealType: _mealType,
-    );
+
+    for (final entry in _selectedFoods.entries) {
+      final portions = _selectedPortions[entry.key] ?? 1.0;
+      await context.read<MealService>().addMeal(
+        userId: user.id,
+        food: entry.value,
+        portions: portions,
+        mealType: _mealType,
+      );
+    }
+
     if (!mounted) return;
     setState(() => _loading = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Refeição registrada!'), backgroundColor: AppColors.success),
-    );
+    final count = _selectedFoods.length;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(count == 1 ? 'Refeição registrada!' : '$count refeições registradas!'),
+      backgroundColor: AppColors.success,
+    ));
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final cats = ['Todos', ...FoodDatabase.categories];
+    final hasSelection = _selectedFoods.isNotEmpty;
+
     return Scaffold(
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg,
         elevation: 0,
         foregroundColor: AppColors.textPrimary,
-        title: Text('Registrar Refeição', style: GoogleFonts.syne(fontWeight: FontWeight.w700)),
+        title: Text(
+          hasSelection
+              ? '${_selectedFoods.length} selecionado${_selectedFoods.length > 1 ? 's' : ''}'
+              : 'Registrar Refeição',
+          style: GoogleFonts.syne(fontWeight: FontWeight.w700),
+        ),
+        actions: [
+          if (hasSelection)
+            TextButton(
+              onPressed: () => setState(() {
+                _selectedFoods.clear();
+                _selectedPortions.clear();
+              }),
+              child: const Text('Limpar', style: TextStyle(color: AppColors.textMuted)),
+            ),
+        ],
       ),
       body: Column(
         children: [
@@ -64,7 +117,7 @@ class _RegisterMealScreenState extends State<RegisterMealScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                // Meal type
+                // Tipo de refeição
                 Row(
                   children: AppText.mealTypeLabels.entries.map((e) {
                     final selected = _mealType == e.key;
@@ -91,7 +144,7 @@ class _RegisterMealScreenState extends State<RegisterMealScreen> {
                   }).toList(),
                 ),
                 const SizedBox(height: 12),
-                // Search
+                // Busca
                 TextField(
                   onChanged: (v) => setState(() => _search = v),
                   style: const TextStyle(color: AppColors.textPrimary),
@@ -106,7 +159,7 @@ class _RegisterMealScreenState extends State<RegisterMealScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // Categories
+                // Categorias
                 SizedBox(
                   height: 32,
                   child: ListView.separated(
@@ -138,45 +191,121 @@ class _RegisterMealScreenState extends State<RegisterMealScreen> {
             ),
           ),
 
-          // Food list
+          // Lista de alimentos
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: _filtered.length,
               itemBuilder: (_, i) {
                 final food = _filtered[i];
-                final sel = _selected?.id == food.id;
+                final sel = _isSelected(food);
+                final portions = _getPortions(food);
+                final portionsLabel = portions % 1 == 0
+                    ? '${portions.toInt()}x'
+                    : '${portions}x';
+
                 return GestureDetector(
-                  onTap: () => setState(() => _selected = food),
-                  child: Container(
+                  onTap: () => _toggleFood(food),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 160),
                     margin: const EdgeInsets.only(bottom: 8),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: sel ? AppColors.primary.withOpacity(0.12) : AppColors.surface,
+                      color: sel ? AppColors.primary.withOpacity(0.10) : AppColors.surface,
                       borderRadius: BorderRadius.circular(12),
                       border: sel ? Border.all(color: AppColors.primary, width: 1.5) : null,
                     ),
-                    child: Row(children: [
-                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(food.name, style: TextStyle(
-                          color: sel ? AppColors.primary : AppColors.textPrimary,
-                          fontWeight: FontWeight.w500, fontSize: 13,
-                        )),
-                        Text('Por 50g: ${food.caloriesPer50g.toInt()} kcal · P:${food.proteinPer50g.toInt()}g C:${food.carbsPer50g.toInt()}g G:${food.fatPer50g.toInt()}g',
-                          style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
-                      ])),
-                      if (sel) const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 20),
-                    ]),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Linha principal
+                        Row(children: [
+                          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(food.name, style: TextStyle(
+                              color: sel ? AppColors.primary : AppColors.textPrimary,
+                              fontWeight: FontWeight.w600, fontSize: 13,
+                            )),
+                            Text(
+                              'Por 50g: ${food.caloriesPer50g.toInt()} kcal · '
+                              'P:${food.proteinPer50g.toInt()}g '
+                              'C:${food.carbsPer50g.toInt()}g '
+                              'G:${food.fatPer50g.toInt()}g',
+                              style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
+                            ),
+                          ])),
+                          if (sel)
+                            const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 20)
+                          else
+                            const Icon(Icons.add_circle_outline, color: AppColors.textMuted, size: 20),
+                        ]),
+
+                        // Controle de quantidade — só aparece quando selecionado
+                        if (sel) ...[
+                          const SizedBox(height: 10),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppColors.surface2,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(children: [
+                              const Text('Porções (50g):', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                              const Spacer(),
+                              // Botão −
+                              GestureDetector(
+                                onTap: () => _changePortions(food, -0.5),
+                                child: Container(
+                                  width: 28, height: 28,
+                                  decoration: BoxDecoration(
+                                    color: portions <= 0.5 ? AppColors.surface : AppColors.bg,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(Icons.remove, size: 16,
+                                    color: portions <= 0.5 ? AppColors.textMuted : AppColors.textPrimary),
+                                ),
+                              ),
+                              // Valor central
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 14),
+                                child: Column(children: [
+                                  Text(portionsLabel, style: GoogleFonts.inter(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 16,
+                                  )),
+                                  Text(
+                                    '${(portions * 50).toInt()}g · ${food.calories(portions).toInt()} kcal',
+                                    style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
+                                  ),
+                                ]),
+                              ),
+                              // Botão +
+                              GestureDetector(
+                                onTap: () => _changePortions(food, 0.5),
+                                child: Container(
+                                  width: 28, height: 28,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(Icons.add, size: 16, color: AppColors.primary),
+                                ),
+                              ),
+                            ]),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 );
               },
             ),
           ),
 
-          // Bottom panel when food is selected
-          if (_selected != null)
+          // Painel inferior — aparece com seleção
+          if (hasSelection)
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
               decoration: const BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -185,29 +314,54 @@ class _RegisterMealScreenState extends State<RegisterMealScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Text(_selected!.name, style: GoogleFonts.syne(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-                    Text('${(_portions * _selected!.calories(_portions)).toInt()} kcal',
-                      style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700, fontSize: 15)),
-                  ]),
-                  const SizedBox(height: 12),
-                  Row(children: [
-                    const Text('Porções (50g cada):', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-                    const SizedBox(width: 12),
-                    IconButton(
-                      onPressed: _portions > 0.5 ? () => setState(() => _portions -= 0.5) : null,
-                      icon: const Icon(Icons.remove_circle_outline, color: AppColors.textSecondary),
+                    Text(
+                      '${_selectedFoods.length} item${_selectedFoods.length > 1 ? 'ns' : ''}',
+                      style: GoogleFonts.syne(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
                     ),
-                    Text('${_portions}x = ${(_portions * 50).toInt()}g',
-                      style: GoogleFonts.syne(color: AppColors.textPrimary, fontWeight: FontWeight.w700, fontSize: 14)),
-                    IconButton(
-                      onPressed: () => setState(() => _portions += 0.5),
-                      icon: const Icon(Icons.add_circle_outline, color: AppColors.primary),
+                    Text(
+                      'Total: ${_totalCalories.toInt()} kcal',
+                      style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700, fontSize: 15),
                     ),
                   ]),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
+                  // Chips resumo (toque para remover)
+                  SizedBox(
+                    width: double.infinity,
+                    child: Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: _selectedFoods.values.map((food) {
+                        final p = _selectedPortions[food.id] ?? 1.0;
+                        final label = p % 1 == 0 ? '${p.toInt()}x' : '${p}x';
+                        return GestureDetector(
+                          onTap: () => _toggleFood(food),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: AppColors.primary.withOpacity(0.4)),
+                            ),
+                            child: Row(mainAxisSize: MainAxisSize.min, children: [
+                              Text('$label ${food.name}',
+                                style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w500)),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.close, color: AppColors.primary, size: 12),
+                            ]),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
                   _loading
                       ? const CircularProgressIndicator(color: AppColors.primary)
-                      : BLButton(label: 'Adicionar refeição', onTap: _save),
+                      : BLButton(
+                          label: _selectedFoods.length == 1
+                              ? 'Adicionar refeição'
+                              : 'Adicionar ${_selectedFoods.length} refeições',
+                          onTap: _save,
+                        ),
                 ],
               ),
             ),

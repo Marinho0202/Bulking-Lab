@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -6,12 +7,13 @@ import '../services/meal_service.dart';
 import '../services/group_service.dart';
 import '../utils/constants.dart';
 import '../widgets/common_widgets.dart';
-import 'login_screen.dart'; // Certifique-se que o caminho está correto
+import 'login_screen.dart';
 import 'register_meal_screen.dart';
 import 'history_screen.dart';
 import 'ranking_screen.dart';
 import 'stats_screen.dart';
 import 'groups_screen.dart';
+import 'edit_profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,7 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Usamos o addPostFrameCallback para interagir com o Provider após a montagem do frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkAuthAndLoad();
     });
@@ -34,20 +35,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _checkAuthAndLoad() {
     final auth = context.read<AuthService>();
-    
-    // Se o serviço já inicializou e não tem usuário, manda para o Login
     if (auth.initialized && auth.currentUser == null) {
       _redirectToLogin();
       return;
     }
-
-    // Se houver usuário, carrega os dados
     if (auth.currentUser != null) {
       context.read<MealService>().loadForUser(auth.currentUser!.id);
-      context.read<GroupService>().load();
+      // Inicia o stream em tempo real de grupos (substitui o load() pontual)
+      context.read<GroupService>().startListening();
     }
-
-    // Caso o AuthService ainda esteja carregando, ouvimos a mudança
     auth.addListener(_onAuthChanged);
   }
 
@@ -61,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _redirectToLogin() {
     if (!mounted) return;
+    context.read<GroupService>().stopListening();
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const LoginScreen()),
       (route) => false,
@@ -69,16 +66,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    // É importante remover o listener para evitar vazamento de memória
     context.read<AuthService>().removeListener(_onAuthChanged);
     super.dispose();
+  }
+
+  Future<void> _refresh() async {
+    final user = context.read<AuthService>().currentUser;
+    if (user == null) return;
+    // Grupos são atualizados automaticamente via stream.
+    // Aqui só recarregamos as refeições do Firestore.
+    await context.read<MealService>().reloadForUser(user.id);
   }
 
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthService>();
 
-    // Enquanto o Firebase não decide se tem usuário ou não, mostra um loading limpo
     if (!auth.initialized || auth.currentUser == null) {
       return const Scaffold(
         backgroundColor: AppColors.bg,
@@ -95,7 +98,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.bg,
-      body: screens[_tab],
+      body: BLRefreshWrapper(
+        onRefresh: _refresh,
+        child: IndexedStack(
+          index: _tab,
+          children: screens,
+        ),
+      ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: AppColors.surface,
@@ -122,15 +131,40 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-class _HomeTab extends StatelessWidget {
+
+// ── Aba principal ──────────────────────────────────────────────────────────
+
+class _HomeTab extends StatefulWidget {
   const _HomeTab({super.key});
 
   @override
+  State<_HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends State<_HomeTab> {
+  Timer? _refreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-refresh a cada 30 segundos
+    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      final user = context.read<AuthService>().currentUser;
+      if (user != null && mounted) {
+        context.read<MealService>().reloadForUser(user.id);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final authService = context.watch<AuthService>();
-    final user = authService.currentUser;
-    
-    // Proteção contra Null Check ao deslogar
+    final user = context.watch<AuthService>().currentUser;
     if (user == null) {
       return const Center(child: CircularProgressIndicator(color: AppColors.primary));
     }
@@ -146,14 +180,14 @@ class _HomeTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
+            // ── Header ──────────────────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
-                    'Olá, ${user.name.isNotEmpty ? user.name.split(' ').first : 'Usuário'} 👋', 
-                    style: GoogleFonts.syne(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.textPrimary)
+                    'Olá, ${user.name.isNotEmpty ? user.name.split(' ').first : 'Usuário'} 👋',
+                    style: GoogleFonts.syne(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                   ),
                   Text(_goalText(user.goal), style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 ]),
@@ -167,16 +201,27 @@ class _HomeTab extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
+                  // Avatar — abre o bottom sheet de perfil
                   GestureDetector(
-                    onTap: () => _showLogoutDialog(context),
+                    onTap: () => _showProfileSheet(context, user),
                     child: Container(
                       width: 38, height: 38,
                       decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-                      child: Center(
-                        child: Text(
-                          (user.name.isNotEmpty ? user.name[0] : 'U').toUpperCase(), 
-                          style: GoogleFonts.syne(fontWeight: FontWeight.w800, color: AppColors.bg, fontSize: 15)
-                        )
+                      child: ClipOval(
+                        child: (user.photoUrl != null && user.photoUrl!.isNotEmpty)
+                            ? Image.network(user.photoUrl!, fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Center(
+                                  child: Text(
+                                    (user.name.isNotEmpty ? user.name[0] : 'U').toUpperCase(),
+                                    style: GoogleFonts.inter(fontWeight: FontWeight.w800, color: AppColors.bg, fontSize: 15),
+                                  ),
+                                ))
+                            : Center(
+                                child: Text(
+                                  (user.name.isNotEmpty ? user.name[0] : 'U').toUpperCase(),
+                                  style: GoogleFonts.inter(fontWeight: FontWeight.w800, color: AppColors.bg, fontSize: 15),
+                                ),
+                              ),
                       ),
                     ),
                   ),
@@ -185,7 +230,7 @@ class _HomeTab extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // Score card
+            // ── Score card ──────────────────────────────────────────
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -202,18 +247,21 @@ class _HomeTab extends StatelessWidget {
                           const Text('Pontuação hoje', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                           const SizedBox(height: 4),
                           Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                            Text('$score', style: GoogleFonts.syne(fontSize: 42, fontWeight: FontWeight.w800, color: AppColors.primary)),
-                            const Padding(padding: EdgeInsets.only(bottom: 8, left: 4), child: Text('/100', style: TextStyle(color: AppColors.textMuted, fontSize: 16))),
+                            Text('$score', style: GoogleFonts.inter(fontSize: 42, fontWeight: FontWeight.w800, color: AppColors.primary)),
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 8, left: 4),
+                              child: Text('/100', style: TextStyle(color: AppColors.textMuted, fontSize: 16)),
+                            ),
                           ]),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withAlpha(38), // Substituído withOpacity (38/255 = ~0.15)
-                              borderRadius: BorderRadius.circular(8)
+                              color: AppColors.primary.withAlpha(38),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              _scoreLabel(score), 
-                              style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600)
+                              _scoreLabel(score),
+                              style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600),
                             ),
                           ),
                         ]),
@@ -223,20 +271,20 @@ class _HomeTab extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Row(children: [
-                    _CalStat(label: 'Kcal', value: log.totalCalories.toInt(), target: user.targetCalories.toInt(), color: AppColors.info),
+                    _CalStat(label: 'Kcal',     value: log.totalCalories.toInt(), target: user.targetCalories.toInt(), color: AppColors.info),
                     const SizedBox(width: 8),
-                    _CalStat(label: 'Proteína', value: log.totalProtein.toInt(), target: user.targetProtein.toInt(), color: const Color(0xFFE8855A), suffix: 'g'),
+                    _CalStat(label: 'Proteína', value: log.totalProtein.toInt(),  target: user.targetProtein.toInt(),  color: const Color(0xFFE8855A), suffix: 'g'),
                     const SizedBox(width: 8),
-                    _CalStat(label: 'Carbs', value: log.totalCarbs.toInt(), target: user.targetCarbs.toInt(), color: const Color(0xFF5A9EE8), suffix: 'g'),
+                    _CalStat(label: 'Carbs',    value: log.totalCarbs.toInt(),    target: user.targetCarbs.toInt(),    color: const Color(0xFF5A9EE8), suffix: 'g'),
                     const SizedBox(width: 8),
-                    _CalStat(label: 'Gordura', value: log.totalFat.toInt(), target: user.targetFat.toInt(), color: const Color(0xFFE8D05A), suffix: 'g'),
+                    _CalStat(label: 'Gordura',  value: log.totalFat.toInt(),      target: user.targetFat.toInt(),      color: const Color(0xFFE8D05A), suffix: 'g'),
                   ]),
                 ],
               ),
             ),
             const SizedBox(height: 20),
 
-            // Register meal button
+            // ── Botão registrar refeição ────────────────────────────
             GestureDetector(
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterMealScreen())),
               child: Container(
@@ -258,14 +306,16 @@ class _HomeTab extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // Recent meals
+            // ── Refeições de hoje ───────────────────────────────────
             const SectionHeader(title: 'Refeições de hoje'),
             const SizedBox(height: 12),
             if (log.meals.isEmpty)
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16)),
-                child: const Center(child: Text('Nenhuma refeição registrada ainda.', style: TextStyle(color: AppColors.textMuted, fontSize: 13))),
+                child: const Center(
+                  child: Text('Nenhuma refeição registrada ainda.', style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
+                ),
               )
             else
               ...log.meals.take(4).map((meal) => _MealTile(meal: meal, userId: user.id)),
@@ -280,12 +330,11 @@ class _HomeTab extends StatelessWidget {
     );
   }
 
-  // Métodos movidos para dentro da _HomeTab
   String _goalText(String goal) {
     switch (goal) {
       case 'lose': return 'Objetivo: Emagrecimento';
       case 'gain': return 'Objetivo: Ganho muscular';
-      default: return 'Objetivo: Manutenção';
+      default:     return 'Objetivo: Manutenção';
     }
   }
 
@@ -297,26 +346,218 @@ class _HomeTab extends StatelessWidget {
     return 'Continue assim!';
   }
 
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(context: context, builder: (_) => AlertDialog(
+  void _showProfileSheet(BuildContext context, user) {
+    showModalBottomSheet(
+      context: context,
       backgroundColor: AppColors.surface,
-      title: Text('Sair', style: GoogleFonts.syne(color: AppColors.textPrimary)),
-      content: const Text('Deseja sair da sua conta?', style: TextStyle(color: AppColors.textSecondary)),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar', style: TextStyle(color: AppColors.textSecondary))),
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-            context.read<AuthService>().logout();
-          },
-          child: const Text('Sair', style: TextStyle(color: AppColors.error)),
-        ),
-      ],
-    ));
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _ProfileSheet(user: user),
+    );
   }
 }
 
-// O restante dos widgets secundários (_CircleProgress, _CalStat, _MealTile) continua igual...
+// ── Bottom sheet de perfil ─────────────────────────────────────────────────
+
+class _ProfileSheet extends StatelessWidget {
+  final dynamic user;
+  const _ProfileSheet({required this.user});
+
+  String _goalLabel(String goal) {
+    switch (goal) {
+      case 'lose': return 'Emagrecimento';
+      case 'gain': return 'Ganho muscular';
+      default:     return 'Manutenção';
+    }
+  }
+
+  String _activityLabel(String level) {
+    const labels = {
+      'sedentary':   'Sedentário',
+      'light':       'Levemente ativo',
+      'moderate':    'Moderadamente ativo',
+      'active':      'Muito ativo',
+      'very_active': 'Extremamente ativo',
+    };
+    return labels[level] ?? level;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final initials = user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U';
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle
+          Container(
+            width: 40, height: 4,
+            margin: const EdgeInsets.only(bottom: 20),
+            decoration: BoxDecoration(color: AppColors.surface2, borderRadius: BorderRadius.circular(2)),
+          ),
+
+          // Avatar + nome + email
+          Row(children: [
+            Container(
+              width: 56, height: 56,
+              decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+              child: ClipOval(
+                child: (user.photoUrl != null && (user.photoUrl as String).isNotEmpty)
+                    ? Image.network(user.photoUrl as String, fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Center(
+                          child: Text(initials,
+                              style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.bg)),
+                        ))
+                    : Center(
+                        child: Text(initials,
+                            style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.bg)),
+                      ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(user.name,
+                    style: GoogleFonts.syne(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                Text(user.email,
+                    style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+              ]),
+            ),
+          ]),
+
+          const SizedBox(height: 20),
+          const Divider(color: Color(0xFF2A2A2A), height: 1),
+          const SizedBox(height: 16),
+
+          // Chips de dados resumidos
+          Row(children: [
+            _InfoChip(label: 'Peso',   value: '${user.weight.toInt()} kg'),
+            const SizedBox(width: 8),
+            _InfoChip(label: 'Altura', value: '${user.height.toInt()} cm'),
+            const SizedBox(width: 8),
+            _InfoChip(label: 'Idade',  value: '${user.age} anos'),
+          ]),
+          const SizedBox(height: 8),
+          Row(children: [
+            _InfoChip(label: 'Objetivo',  value: _goalLabel(user.goal),              flex: 2),
+            const SizedBox(width: 8),
+            _InfoChip(label: 'Atividade', value: _activityLabel(user.activityLevel), flex: 3),
+          ]),
+
+          const SizedBox(height: 20),
+
+          // Botão editar perfil
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen()));
+            },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+              ),
+              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                const Icon(Icons.edit_outlined, color: AppColors.primary, size: 18),
+                const SizedBox(width: 8),
+                Text('Editar perfil',
+                    style: GoogleFonts.syne(color: AppColors.primary, fontWeight: FontWeight.w700, fontSize: 14)),
+              ]),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          // Botão logout
+          GestureDetector(
+            onTap: () {
+              // Captura o navigator root ANTES de fechar o sheet
+              final nav = Navigator.of(context, rootNavigator: true);
+              final authService = context.read<AuthService>();
+              Navigator.pop(context); // fecha o sheet
+              _confirmLogout(nav, authService);
+            },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                color: AppColors.error.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                const Icon(Icons.logout_rounded, color: AppColors.error, size: 18),
+                const SizedBox(width: 8),
+                Text('Sair da conta',
+                    style: GoogleFonts.syne(color: AppColors.error, fontWeight: FontWeight.w700, fontSize: 14)),
+              ]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmLogout(NavigatorState nav, AuthService authService) {
+    showDialog(
+      context: nav.context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text('Sair da conta', style: GoogleFonts.syne(color: AppColors.textPrimary)),
+        content: const Text('Tem certeza que deseja sair?', style: TextStyle(color: AppColors.textSecondary)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: const Text('Cancelar', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogCtx).pop();
+              authService.logout();
+            },
+            child: const Text('Sair', style: TextStyle(color: AppColors.error)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Chip de info do perfil ─────────────────────────────────────────────────
+
+class _InfoChip extends StatelessWidget {
+  final String label;
+  final String value;
+  final int flex;
+
+  const _InfoChip({required this.label, required this.value, this.flex = 1});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: flex,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(color: AppColors.surface2, borderRadius: BorderRadius.circular(10)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 10)),
+          const SizedBox(height: 2),
+          Text(value,
+              style: const TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis),
+        ]),
+      ),
+    );
+  }
+}
+
+// ── Widgets internos ───────────────────────────────────────────────────────
+
 class _CircleProgress extends StatelessWidget {
   final double value;
   const _CircleProgress({required this.value});
@@ -324,8 +565,7 @@ class _CircleProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 72,
-      height: 72,
+      width: 72, height: 72,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -335,7 +575,8 @@ class _CircleProgress extends StatelessWidget {
             backgroundColor: AppColors.surface2,
             valueColor: const AlwaysStoppedAnimation(AppColors.primary),
           ),
-          Text('${(value * 100).round()}%', style: GoogleFonts.syne(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+          Text('${(value * 100).round()}%',
+              style: GoogleFonts.syne(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
         ],
       ),
     );
@@ -349,7 +590,13 @@ class _CalStat extends StatelessWidget {
   final Color color;
   final String suffix;
 
-  const _CalStat({required this.label, required this.value, required this.target, required this.color, this.suffix = ''});
+  const _CalStat({
+    required this.label,
+    required this.value,
+    required this.target,
+    required this.color,
+    this.suffix = '',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -389,10 +636,13 @@ class _MealTile extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(meal.food.name, style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500)),
-          Text('${meal.grams.toInt()}g · ${meal.calories.toInt()} kcal', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+          Text(meal.food.name,
+              style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500)),
+          Text('${meal.grams.toInt()}g · ${meal.calories.toInt()} kcal',
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
         ])),
-        Text('P: ${meal.protein.toInt()}g', style: const TextStyle(color: Color(0xFFE8855A), fontSize: 11, fontWeight: FontWeight.w500)),
+        Text('P: ${meal.protein.toInt()}g',
+            style: const TextStyle(color: Color(0xFFE8855A), fontSize: 11, fontWeight: FontWeight.w500)),
       ]),
     );
   }

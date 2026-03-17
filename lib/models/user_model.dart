@@ -10,6 +10,7 @@ class UserModel {
   final String goal;
   final int mealsPerDay;
   double currentWeight;
+  String? photoUrl;
 
   UserModel({
     required this.id,
@@ -23,6 +24,7 @@ class UserModel {
     required this.goal,
     required this.mealsPerDay,
     double? currentWeight,
+    this.photoUrl,
   }) : currentWeight = currentWeight ?? weight;
 
   double get bmr {
@@ -80,7 +82,6 @@ class UserModel {
     'id': id,
     'name': name,
     'email': email,
-    'password': '',
     'weight': weight,
     'height': height,
     'age': age,
@@ -89,19 +90,21 @@ class UserModel {
     'goal': goal,
     'mealsPerDay': mealsPerDay,
     'currentWeight': currentWeight,
+    if (photoUrl != null) 'photoUrl': photoUrl,
   };
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-    id: json['id'],
-    name: json['name'],
-    email: json['email'],
-    weight: (json['weight'] as num).toDouble(),
-    height: (json['height'] as num).toDouble(),
-    age: json['age'],
-    gender: json['gender'],
-    activityLevel: json['activityLevel'],
-    goal: json['goal'],
-    mealsPerDay: json['mealsPerDay'],
+    id: json['id'] ?? '',
+    name: json['name'] ?? '',
+    email: json['email'] ?? '',
+    weight: (json['weight'] as num?)?.toDouble() ?? 70,
+    height: (json['height'] as num?)?.toDouble() ?? 170,
+    age: (json['age'] as num?)?.toInt() ?? 25,
+    gender: json['gender'] ?? 'male',
+    activityLevel: json['activityLevel'] ?? 'moderate',
+    goal: json['goal'] ?? 'maintain',
+    mealsPerDay: (json['mealsPerDay'] as num?)?.toInt() ?? 3,
     currentWeight: (json['currentWeight'] as num?)?.toDouble(),
+    photoUrl: json['photoUrl'] as String?,
   );
 }

@@ -3,11 +3,7 @@
     <application
         android:label="Bulking Lab"
         android:name="${applicationName}"
-<<<<<<< HEAD
         android:icon="@mipmap/launcher_icon">
-=======
-        android:icon="@mipmap/ic_launcher">
->>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
         <activity
             android:name=".MainActivity"
             android:exported="true"

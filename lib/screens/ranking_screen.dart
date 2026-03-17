@@ -173,7 +173,7 @@ class _Podium extends StatelessWidget {
                     border: i == 1 ? Border.all(color: AppColors.primary, width: 2) : null,
                   ),
                   child: Center(child: Text(m.user.name[0].toUpperCase(),
-                    style: GoogleFonts.syne(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.primary))),
+                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.primary))),
                 ),
                 const SizedBox(height: 4),
                 Text(m.user.name.split(' ').first,
@@ -187,7 +187,7 @@ class _Podium extends StatelessWidget {
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
                   ),
                   child: Center(
-                    child: Text('${m.weeklyPoints}', style: GoogleFonts.syne(
+                    child: Text('${m.weeklyPoints}', style: GoogleFonts.inter(
                       fontSize: 13, fontWeight: FontWeight.w800,
                       color: i == 1 ? AppColors.primary : AppColors.textSecondary,
                     )),
@@ -217,7 +217,7 @@ class _RankRow extends StatelessWidget {
       child: Row(children: [
         SizedBox(
           width: 24,
-          child: Text('$rank', style: GoogleFonts.syne(
+          child: Text('$rank', style: GoogleFonts.inter(
             fontSize: 13, fontWeight: FontWeight.w800,
             color: rank <= 3 ? AppColors.primary : AppColors.textMuted,
           )),
@@ -244,7 +244,7 @@ class _RankRow extends StatelessWidget {
             style: const TextStyle(color: AppColors.textMuted, fontSize: 10)),
         ])),
         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          Text('${member.weeklyPoints}', style: GoogleFonts.syne(
+          Text('${member.weeklyPoints}', style: GoogleFonts.inter(
             fontSize: 15, fontWeight: FontWeight.w800,
             color: isMe ? AppColors.primary : AppColors.textPrimary,
           )),
