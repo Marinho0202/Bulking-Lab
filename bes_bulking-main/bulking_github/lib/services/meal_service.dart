@@ -38,6 +38,13 @@ class MealService extends ChangeNotifier {
     }
   }
 
+  // Força recarregamento do Firebase ignorando o cache local (usado no pull-to-refresh)
+  Future<void> reloadForUser(String userId) async {
+    _loaded = false;
+    _loadedUserId = null; // força o loadForUser a não pular o cache
+    await loadForUser(userId);
+  }
+
   // SALVA NO FIREBASE (Substituiu o SharedPreferences)
   Future<void> addMeal({
     required String userId,

@@ -55,7 +55,6 @@ class AuthService extends ChangeNotifier {
     required int mealsPerDay,
   }) async {
     try {
-      // 1. Cria no Auth
       UserCredential credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -75,18 +74,15 @@ class AuthService extends ChangeNotifier {
           mealsPerDay: mealsPerDay,
         );
 
-        // 2. Tenta salvar no Firestore
         try {
           await _db.collection('users').doc(user.id).set(user.toJson());
           _currentUser = user;
           notifyListeners();
           return true;
         } catch (firestoreError) {
-          // Se o Firestore falhar (regras bloqueadas), deletamos o user do Auth
-          // para você conseguir tentar cadastrar o mesmo e-mail de novo depois de corrigir as regras.
           await credential.user!.delete();
           debugPrint("ERRO NO FIRESTORE: $firestoreError");
-          rethrow; // Envia o erro para a tela
+          rethrow;
         }
       }
       return false;
@@ -119,6 +115,13 @@ class AuthService extends ChangeNotifier {
     await _auth.signOut();
     _currentUser = null;
     notifyListeners();
+  }
+
+  // Recarrega os dados do usuário do Firestore (usado após edição de perfil)
+  Future<void> reloadUser() async {
+    final firebaseUser = _auth.currentUser;
+    if (firebaseUser == null) return;
+    await _fetchUserData(firebaseUser.uid);
   }
 
   Future<void> updateWeight(double newWeight) async {

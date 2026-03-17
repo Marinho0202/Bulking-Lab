@@ -6,10 +6,7 @@ import '../services/meal_service.dart';
 import '../services/group_service.dart';
 import '../utils/constants.dart';
 import '../widgets/common_widgets.dart';
-<<<<<<< HEAD
 import 'login_screen.dart'; // Certifique-se que o caminho está correto
-=======
->>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
 import 'register_meal_screen.dart';
 import 'history_screen.dart';
 import 'ranking_screen.dart';
@@ -29,7 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-<<<<<<< HEAD
     // Usamos o addPostFrameCallback para interagir com o Provider após a montagem do frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkAuthAndLoad();
@@ -90,19 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-=======
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final user = context.read<AuthService>().currentUser;
-      if (user != null) {
-        context.read<MealService>().loadForUser(user.id);
-        context.read<GroupService>().load();
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
->>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
     final screens = [
       const _HomeTab(),
       const HistoryScreen(),
@@ -139,7 +122,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-<<<<<<< HEAD
 class _HomeTab extends StatelessWidget {
   const _HomeTab({super.key});
 
@@ -153,15 +135,6 @@ class _HomeTab extends StatelessWidget {
       return const Center(child: CircularProgressIndicator(color: AppColors.primary));
     }
 
-=======
-
-class _HomeTab extends StatelessWidget {
-  const _HomeTab();
-
-  @override
-  Widget build(BuildContext context) {
-    final user = context.watch<AuthService>().currentUser!;
->>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
     final mealSvc = context.watch<MealService>();
     final now = DateTime.now();
     final log = mealSvc.getDailyLog(user.id, now);
@@ -178,14 +151,10 @@ class _HomeTab extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-<<<<<<< HEAD
                   Text(
                     'Olá, ${user.name.isNotEmpty ? user.name.split(' ').first : 'Usuário'} 👋', 
                     style: GoogleFonts.syne(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.textPrimary)
                   ),
-=======
-                  Text('Olá, ${user.name.split(' ').first} 👋', style: GoogleFonts.syne(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
->>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
                   Text(_goalText(user.goal), style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 ]),
                 Row(children: [
@@ -202,7 +171,6 @@ class _HomeTab extends StatelessWidget {
                     onTap: () => _showLogoutDialog(context),
                     child: Container(
                       width: 38, height: 38,
-<<<<<<< HEAD
                       decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
                       child: Center(
                         child: Text(
@@ -210,10 +178,6 @@ class _HomeTab extends StatelessWidget {
                           style: GoogleFonts.syne(fontWeight: FontWeight.w800, color: AppColors.bg, fontSize: 15)
                         )
                       ),
-=======
-                      decoration: BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-                      child: Center(child: Text(user.name[0].toUpperCase(), style: GoogleFonts.syne(fontWeight: FontWeight.w800, color: AppColors.bg, fontSize: 15))),
->>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
                     ),
                   ),
                 ]),
@@ -235,11 +199,7 @@ class _HomeTab extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-<<<<<<< HEAD
                           const Text('Pontuação hoje', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-=======
-                          Text('Pontuação hoje', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
->>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
                           const SizedBox(height: 4),
                           Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
                             Text('$score', style: GoogleFonts.syne(fontSize: 42, fontWeight: FontWeight.w800, color: AppColors.primary)),
@@ -247,7 +207,6 @@ class _HomeTab extends StatelessWidget {
                           ]),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-<<<<<<< HEAD
                             decoration: BoxDecoration(
                               color: AppColors.primary.withAlpha(38), // Substituído withOpacity (38/255 = ~0.15)
                               borderRadius: BorderRadius.circular(8)
@@ -256,10 +215,6 @@ class _HomeTab extends StatelessWidget {
                               _scoreLabel(score), 
                               style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600)
                             ),
-=======
-                            decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
-                            child: Text(_scoreLabel(score), style: TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600)),
->>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
                           ),
                         ]),
                       ),
@@ -304,11 +259,7 @@ class _HomeTab extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Recent meals
-<<<<<<< HEAD
             const SectionHeader(title: 'Refeições de hoje'),
-=======
-            SectionHeader(title: 'Refeições de hoje'),
->>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
             const SizedBox(height: 12),
             if (log.meals.isEmpty)
               Container(
@@ -329,10 +280,7 @@ class _HomeTab extends StatelessWidget {
     );
   }
 
-<<<<<<< HEAD
   // Métodos movidos para dentro da _HomeTab
-=======
->>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
   String _goalText(String goal) {
     switch (goal) {
       case 'lose': return 'Objetivo: Emagrecimento';
@@ -368,10 +316,7 @@ class _HomeTab extends StatelessWidget {
   }
 }
 
-<<<<<<< HEAD
 // O restante dos widgets secundários (_CircleProgress, _CalStat, _MealTile) continua igual...
-=======
->>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
 class _CircleProgress extends StatelessWidget {
   final double value;
   const _CircleProgress({required this.value});
@@ -451,8 +396,4 @@ class _MealTile extends StatelessWidget {
       ]),
     );
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 223706ce7b345145af6e7cc688b6e65577f8ddae
